@@ -1,0 +1,12 @@
+{
+    "vehicle": [
+        {
+            "PutRequest": {
+              "Item": {
+                "device": {"S":"DR001"},
+                "longitude": {"N": "777"}
+              }
+            }
+        }
+    ]
+}

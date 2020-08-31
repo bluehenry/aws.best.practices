@@ -1,0 +1,13 @@
+eksctl create cluster \
+--name cluser_name \
+--region us-east-1  \
+--version 1.16 \
+--nodegroup-name standard-workers \
+--node-type r5.4xlarge \
+--nodes 2 \
+--nodes-min 2 \
+--nodes-max 6 \
+--managed \
+--ssh-access \
+--ssh-public-key Prod-EKS-nodes-public-key.pub \
+--vpc-private-subnets=subnet-id-1,subnet-subnet-id-2

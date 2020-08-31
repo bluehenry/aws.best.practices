@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    run: dnsutils
+  name: dnsutils
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: dnsutils
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: dnsutils
+    spec:
+      containers:
+      - name: dnsutils
+        image: gcr.io/kubernetes-e2e-test-images/dnsutils:1.3
+        command:
+          - sleep
+          - "3600"
+        resources: {}
+status: {}

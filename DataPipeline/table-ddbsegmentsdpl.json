@@ -1,0 +1,112 @@
+{
+  "objects": [
+    {
+      "property": {
+        "ref": "PropertyId_QkjkH"
+      },
+      "name": "EmrConfigurationDisablingSpeculation",
+      "id": "EmrConfigurationId_FZ5yK",
+      "classification": "mapred-site",
+      "type": "EmrConfiguration"
+    },
+    {
+      "name": "DisablingSpeculation",
+      "id": "PropertyId_QkjkH",
+      "type": "Property",
+      "value": "false",
+      "key": "mapreduce.map.speculative"
+    },
+    {
+      "subnetId": "subnet-01cebe6e58176737e",
+      "configuration": {
+        "ref": "EmrConfigurationId_FZ5yK"
+      },
+      "name": "EmrClusterForBackup",
+      "coreInstanceType": "m5.xlarge",
+      "coreInstanceCount": "2",
+      "masterInstanceType": "m5.xlarge",
+      "releaseLabel": "emr-5.23.0",
+      "id": "EmrClusterForBackup",
+      "region": "#{myDDBRegion}",
+      "type": "EmrCluster",
+      "terminateAfter": "24 Hours"
+    },
+    {
+      "output": {
+        "ref": "S3BackupLocation"
+      },
+      "input": {
+        "ref": "DDBSourceTable"
+      },
+      "maximumRetries": "2",
+      "name": "TableBackupActivity",
+      "step": "s3://dynamodb-dpl-#{myDDBRegion}/emr-ddb-storage-handler/4.11.0/emr-dynamodb-tools-4.11.0-SNAPSHOT-jar-with-dependencies.jar,org.apache.hadoop.dynamodb.tools.DynamoDBExport,-Dfs.s3.canned.acl=BucketOwnerFullControl,#{output.directoryPath},#{input.tableName},#{input.readThroughputPercent},#{myDDBSegments}",
+      "id": "TableBackupActivity",
+      "runsOn": {
+        "ref": "EmrClusterForBackup"
+      },
+      "type": "EmrActivity",
+      "resizeClusterBeforeRunning": "false"
+    },
+    {
+      "readThroughputPercent": "#{myDDBReadThroughputRatio}",
+      "name": "DDBSourceTable",
+      "id": "DDBSourceTable",
+      "type": "DynamoDBDataNode",
+      "tableName": "#{myDDBTableName}"
+    },
+    {
+      "directoryPath": "#{myOutputS3Loc}/#{format(@scheduledStartTime, 'YYYY-MM-dd-HH-mm-ss')}",
+      "name": "S3BackupLocation",
+      "id": "S3BackupLocation",
+      "type": "S3DataNode"
+    },
+    {
+      "failureAndRerunMode": "CASCADE",
+      "resourceRole": "DataPipelineDefaultResourceRole",
+      "role": "DataPipelineDefaultRole",
+      "pipelineLogUri": "s3://uri/log",
+      "scheduleType": "ONDEMAND",
+      "name": "Default",
+      "id": "Default"
+    }
+  ],
+  "parameters": [
+    {
+      "description": "Segments of the DynamoDB table",
+      "id": "myDDBSegments",
+      "type": "String"
+    },
+    {
+      "description": "Output S3 folder",
+      "id": "myOutputS3Loc",
+      "type": "AWS::S3::ObjectKey"
+    },
+    {
+      "description": "Source DynamoDB table name",
+      "id": "myDDBTableName",
+      "type": "String"
+    },
+    {
+      "default": "0.25",
+      "watermark": "Enter value between 0.1-1.0",
+      "description": "DynamoDB read throughput ratio",
+      "id": "myDDBReadThroughputRatio",
+      "type": "Double"
+    },
+    {
+      "default": "us-east-1",
+      "watermark": "us-east-1",
+      "description": "Region of the DynamoDB table",
+      "id": "myDDBRegion",
+      "type": "String"
+    }
+  ],
+  "values": {
+    "myDDBRegion": "us-east-1",
+    "myDDBSegments": "2",
+    "myDDBTableName": "table-name",
+    "myDDBReadThroughputRatio": "0.90",
+    "myOutputS3Loc": "s3://uri/log"
+  }
+}
