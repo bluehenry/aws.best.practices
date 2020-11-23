@@ -1,4 +1,4 @@
-# AWS Security Best Practises
+# AWS Security Best Practices
 ## AWS Overview of Security Processes
 [AWS Overview of Security Processes](https://aws.amazon.com/whitepapers/overview-of-security-processes/)
 You should configure no matter which AWS service you use 
